@@ -22,6 +22,15 @@ if (!process.env.DISABLE_XORIGIN) {
   });
 }
 
+// Allow all hosts for Replit proxy in development
+if (process.env.REPLIT || process.env.NODE_ENV !== 'production') {
+  app.use(function(req, res, next) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    next();
+  });
+}
+
 app.use('/public', express.static(process.cwd() + '/public'));
 
 app.route('/_api/package.json')
@@ -35,7 +44,7 @@ app.route('/_api/package.json')
   
 app.route('/')
     .get(function(req, res) {
-		  res.sendFile(process.cwd() + '/views/index.html');
+                  res.sendFile(process.cwd() + '/views/index.html');
     })
 
 // Respond not found to all the wrong routes
@@ -53,8 +62,8 @@ app.use(function(err, req, res, next) {
   }  
 })
 
-//Listen on port set in environment variable or default to 3000
-const listener = app.listen(process.env.PORT || 3000, function () {
+//Listen on port set in environment variable or default to 5000, bind to all hosts for Replit
+const listener = app.listen(process.env.PORT || 5000, '0.0.0.0', function () {
   console.log("Node.js listening on port " + listener.address().port);
 });
 
